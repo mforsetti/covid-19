@@ -1,12 +1,9 @@
-name: 'Process Data'
+name: 'Process Data (manual)'
 
 on:
   push:
     branches: [ main ]
-  schedule:
-    # Upstream repo is updated daily at 4:50 AM UTC:
-    # we can retrieve data a little while later.
-    - cron: '0 6 * * *'
+  workflow_dispatch:
 
 jobs:
   update:
@@ -37,24 +34,26 @@ jobs:
     #   uses: ad-m/github-push-action@master
     #   with:
     #     github_token: ${{ secrets.gh }}
-  deploy:
-    needs: update
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '8.x'
-    - name: Install data-cli and init package
-      run: |
-        npm install -g data-cli
-        data --version
-        data init data
-    - name: Update metadata and publish to DataHub
-      run: |
-        python scripts/update_datapackage.py
-        data push
-      env:
-        id: ${{secrets.dhid}}
-        username: ${{secrets.dhusername}}
-        token: ${{secrets.dhtoken}}
+  # deploy:
+  #   needs: update
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@main
+  #     with:
+  #       lfs: true
+  #   - uses: actions/setup-node@v1
+  #     with:
+  #       node-version: '8.x'
+  #   - name: Install data-cli and init package
+  #     run: |
+  #       npm install -g data-cli
+  #       data --version
+  #       data init data
+  #   - name: Update metadata and publish to DataHub
+  #     run: |
+  #       python scripts/update_datapackage.py
+  #       data push
+  #     env:
+  #       id: ${{secrets.dhid}}
+  #       username: ${{secrets.dhusername}}
+  #       token: ${{secrets.dhtoken}}
